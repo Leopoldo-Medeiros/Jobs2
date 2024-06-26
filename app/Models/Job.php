@@ -10,17 +10,17 @@ class Job {
             [
                 'id' => 1,
                 'title' => 'PHP Developer',
-                'salary' => '$120.000',
+                'salary' => '€120,000',
             ],
             [
                 'id' => 2,
                 'title' => 'Python Developer',
-                'salary' => '$130.000',
+                'salary' => '€130,000',
             ],
             [
                 'id' => 3,
                 'title' => 'Java Developer',
-                'salary' => '$140.000',
+                'salary' => '€140,000',
             ]
         ];
     }
