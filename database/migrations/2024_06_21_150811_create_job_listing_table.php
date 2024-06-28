@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('job_listing', function (Blueprint $table) {
             $table->id();
+            // foreign key called employer_id
+            // The reason I am using unsignedBigInteger is because whenever I call the id above in a migration, it will be unsignedBigInteger
+            // So when you generate your foreign key, you want to make sure that the type of foreign key matches the type of the primary key
+            $table->unsignedBigInteger('employer_id');
             $table->string('title');
             $table->string('salary');
             $table->timestamps();
