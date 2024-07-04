@@ -12,7 +12,7 @@ Route::get('/jobs', function () {
     // Basically, it's asking to return all jobs WITH the employer for each job
     // This is the equivalent of a SQL query like:
     // SELECT * FROM jobs in SQL
-    $jobs = Job::with('employer')->get();
+    $jobs = Job::with('employer')->paginate(3);
 
     return view('jobs', [
         'jobs' => $jobs
