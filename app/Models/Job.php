@@ -8,7 +8,8 @@ class Job extends Model {
 
     use HasFactory;
     protected $table = 'job_listing';
-    protected $fillable = ['title', 'salary'];
+    // protected $fillable = ['employer_id', 'title', 'salary'];
+    protected $guarded = [];
 
     public function employer()
     {
