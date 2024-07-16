@@ -13,11 +13,9 @@ Route::get('/jobs', function () {
     // Basically, it's asking to return all jobs WITH the employer for each job
     // This is the equivalent of a SQL query like:
     // SELECT * FROM jobs in SQL
-    $jobs = Job::with('employer')->latest()->paginate(3);
+    $jobs = Job::with('employer')->latest()->simplePaginate(3);
 
-    return view('jobs.index', [
-        'jobs' => $jobs
-    ]);
+    return view('jobs.index', ['jobs' => $jobs]);
 });
 
 // This route shows the form to create a job
@@ -34,8 +32,13 @@ Route::get('/jobs/{id}', function ($id) {
 });
 
 Route::post('/jobs', function () {
-//    dd(request('title'));
+    // dd(request('title'));
     // Validation...
+    request()->validate([
+        'title' => ['required', 'min:3'],
+        'salary' => ['required']
+    ]);
+
     Job::create([
       'title' => request('title'),
       'salary' => request('salary'),
