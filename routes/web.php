@@ -18,12 +18,12 @@ Route::get('/jobs', function () {
     return view('jobs.index', ['jobs' => $jobs]);
 });
 
-// This route shows the form to create a job
+// CREATE
 Route::get('/jobs/create', function () {
     return view('jobs.create');
 });
 
-// This route shows a single job
+// SHOW
 Route::get('/jobs/{id}', function ($id) {
 //    $job = Arr::first(Job::all(), fn($job) => $job['id'] == $id);
     $job = Job::find($id);
@@ -31,6 +31,7 @@ Route::get('/jobs/{id}', function ($id) {
     return view('jobs.show', ['job' => $job]);
 });
 
+// STORE
 Route::post('/jobs', function () {
     // dd(request('title'));
     // Validation...
@@ -46,6 +47,14 @@ Route::post('/jobs', function () {
     ]);
 
     return redirect('/jobs');
+});
+
+// EDIT
+Route::get('/jobs/{id}/edit', function ($id) {
+//    $job = Arr::first(Job::all(), fn($job) => $job['id'] == $id);
+    $job = Job::find($id);
+
+    return view('jobs.edit', ['job' => $job]);
 });
 
 // This route shows the contact page
