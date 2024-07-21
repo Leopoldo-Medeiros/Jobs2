@@ -51,10 +51,39 @@ Route::post('/jobs', function () {
 
 // EDIT
 Route::get('/jobs/{id}/edit', function ($id) {
-//    $job = Arr::first(Job::all(), fn($job) => $job['id'] == $id);
     $job = Job::find($id);
 
     return view('jobs.edit', ['job' => $job]);
+});
+
+// UPDATE
+// Process:
+// #1. It'll submit the form to the server
+// #2. It'll update the job in the database
+// #3. It'll redirect the user to the job page
+Route::put('/jobs/{id}', function ($id) {
+    // validate
+    request()->validate([
+        'title' => ['required', 'min:3'],
+        'salary' => ['required']
+    ]);
+    // authorize (On hold ...)
+    $job = Job::findOrFail($id); // null (In the scenario the job doesn't exist in the database)
+
+    $job->update([
+        'title' => request('title'),
+        'salary' => request('salary')
+    ]);
+    // redirect the job page
+    return redirect('/jobs/' . $job->id);
+});
+
+// DESTROY
+Route::delete('/jobs/{id}', function ($id) {
+    // authorize (On hold...)
+    Job::findOrFail($id)->delete();
+
+    return redirect('/jobs');
 });
 
 // This route shows the contact page
