@@ -18,22 +18,23 @@ class JobController extends Controller
         return view('jobs.create');
     }
 
-    public function show(JOb $job)
+    public function show(Job $job)
     {
-        return view('jobs.show');
+        return view('jobs.show', ['job' => $job]);
     }
 
     public function store(Job $job)
     {
         request()->validate([
             'title' => ['required', 'min:3'],
-            'salary' => ['required']
+            'salary' => ['required'],
+            'about' => ['nullable']
         ]);
     }
 
     public function edit(Job $job)
     {
-        return view('jobs.edit');
+        return view('jobs.edit', ['job' => $job]);
     }
 
     public function update(Job $job)
@@ -45,7 +46,8 @@ class JobController extends Controller
 
         $job->update([
             'title' => request('title'),
-            'salary' => request('salary')
+            'salary' => request('salary'),
+            'about' => request('about')
         ]);
         // redirect the job page
         return redirect('/jobs/' . $job->id);
