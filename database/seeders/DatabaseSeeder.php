@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\Job; // Ensure this line correctly references the Job model
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,13 +13,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // User::factory(10)->create();
+
         User::factory()->create([
-            'first_name' => 'Leo',
-            'last_name' => 'Medeiros',
+            'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
-
-        // We use this for when we want to trigger the job seeder class
-        $this->call(JobSeeder::class);
     }
 }
