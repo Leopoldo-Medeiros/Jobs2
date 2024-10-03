@@ -1,19 +1,31 @@
 <?php
 
-use App\Http\Controllers\JobController;
-use App\Http\Controllers\RegisterUserController;
-use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Route;
+use App\Models\Job;
 
-Route::view('/', 'home');
-Route::view('/contact', 'contact');
+Route::get('/', function () {
+    return view('home');
+});
 
-Route::resource('jobs', JobController::class);
+Route::get('/jobs', function () {
 
-// Auth
-Route::get('/register', [RegisterUserController::class, 'create']);
-Route::post('/register', [RegisterUserController::class, 'store']);
+    // Basically, it's asking to return all jobs WITH the employer for each job
+    // This is the equivalent of a SQL query like:
+    // SELECT * FROM jobs in SQL
+    $jobs = Job::with('employer')->paginate(3);
 
-Route::get('/login', [SessionController::class, 'create']);
-Route::post('/login', [SessionController::class, 'store']);
+    return view('jobs', [
+        'jobs' => $jobs
+    ]);
+});
 
+Route::get('/jobs/{id}', function ($id) {
+//    $job = Arr::first(Job::all(), fn($job) => $job['id'] == $id);
+    $job = Job::find($id);
+
+    return view('job', ['job' => $job]);
+});
+
+Route::get('/contact', function () {
+    return view('contact');
+});
