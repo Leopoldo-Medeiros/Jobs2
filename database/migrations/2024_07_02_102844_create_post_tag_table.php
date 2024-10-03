@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('post_tag', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\Job::class, 'job_listing_id')->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(\App\Models\Tag::class)->constrained()->cascadeOnDelete();
+            $table->foreignId('job_listing_id')->constrained('job_listings')->cascadeOnDelete(); // Ensure this references 'job_listings'
+            $table->foreignId('tag_id')->constrained('tags')->cascadeOnDelete(); // Ensure this references 'tags'
             $table->timestamps();
         });
     }

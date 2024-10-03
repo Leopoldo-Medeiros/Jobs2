@@ -2,22 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory; // Import the HasFactory trait
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-class Job extends Model {
 
-    use HasFactory;
-    protected $table = 'job_listing';
-    protected $guarded = [''];
+class Job extends Model
+{
+    use HasFactory; // Use the HasFactory trait
+
+    protected $table = 'job_listings'; // Specify the correct table name if necessary
 
     public function employer()
     {
-        return $this->belongsTo(Employer::class);
+        return $this->belongsTo(Employer::class); // Define the relationship with Employer
     }
-
-    public function tags()
-    {
-        return $this->belongsToMany(Tag::class, foreignPivotKey: "job_listing_id") ;
-    }
-
 }

@@ -13,14 +13,7 @@ return new class extends Migration
     {
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->timestamps();
-        });
-
-        Schema::create('job_tag', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(\App\Models\Job::class,'job_listing_id')->constrained('job_listing')->cascadeOnDelete();
-            $table->foreignIdFor(\App\Models\Tag::class)->constrained()->cascadeOnDelete();;
+            $table->string('name'); // Example column for tag name
             $table->timestamps();
         });
     }
@@ -30,7 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('job_tag');
         Schema::dropIfExists('tags');
     }
 };

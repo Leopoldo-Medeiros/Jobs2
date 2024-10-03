@@ -1,4 +1,4 @@
-name: laravel11
+name: Jobs2
 recipe: laravel
 config:
   php: '8.3'
