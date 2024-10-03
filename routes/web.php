@@ -1,34 +1,31 @@
 <?php
 
-use App\Http\Controllers\JobController;
 use Illuminate\Support\Facades\Route;
+use App\Models\Job;
 
 Route::get('/', function () {
     return view('home');
 });
 
-// INDEX
-Route::get('/jobs', [JobController::class, 'index']);
+Route::get('/jobs', function () {
 
-// CREATE
-Route::get('/jobs/create', [JobController::class, 'create']);
+    // Basically, it's asking to return all jobs WITH the employer for each job
+    // This is the equivalent of a SQL query like:
+    // SELECT * FROM jobs in SQL
+    $jobs = Job::with('employer')->paginate(3);
 
-// SHOW
-Route::get('/jobs/{job}', [JobController::class, 'show']);
+    return view('jobs', [
+        'jobs' => $jobs
+    ]);
+});
 
-// STORE
-Route::post('/jobs', [JobController::class, 'store']);
+Route::get('/jobs/{id}', function ($id) {
+//    $job = Arr::first(Job::all(), fn($job) => $job['id'] == $id);
+    $job = Job::find($id);
 
-// EDIT
-Route::get('/jobs/{job}/edit', [JobController::class, 'edit']);
+    return view('job', ['job' => $job]);
+});
 
-// UPDATE
-Route::put('/jobs/{job}', [JobController::class, 'update']);
-
-// DESTROY
-Route::delete('/jobs/{job}', [JobController::class, 'destroy']);
-
-// This route shows the contact page
 Route::get('/contact', function () {
     return view('contact');
 });
