@@ -14,9 +14,8 @@ Route::get('/jobs', function () {
     // SELECT * FROM jobs in SQL
     $jobs = Job::with('employer')->paginate(3);
 
-    return view('jobs', [
-        'jobs' => $jobs
-    ]);
+
+
 });
 
 Route::get('/jobs/{id}', function ($id) {
