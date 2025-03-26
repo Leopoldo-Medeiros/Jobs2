@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  # Development PHP service
+  app:
+    build:
+      context: .
+      target: development
+    container_name: jobs2_app
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www/html
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - jobs2_network
+
+  # Production PHP service with New Relic
+  app_production:
+    build:
+      context: .
+      target: production
+      args:
+        NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+        NEW_RELIC_APPNAME: ${NEW_RELIC_APPNAME:-"Laravel Application"}
+        NEW_RELIC_AGENT_VERSION: ${NEW_RELIC_AGENT_VERSION:-10.11.0.3}
+    container_name: jobs2_app_production
+    restart: unless-stopped
+    depends_on:
+      - newrelic-php-daemon
+    networks:
+      - jobs2_network
+    profiles:
+      - production
+
+  # New Relic PHP daemon service
+  newrelic-php-daemon:
+    image: newrelic/php-daemon:latest
+    container_name: jobs2_newrelic_daemon
+    restart: unless-stopped
+    networks:
+      - jobs2_network
+    environment:
+      - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
+      - NEW_RELIC_APP_NAME=${NEW_RELIC_APPNAME:-"Laravel Application"}
+    volumes:
+      - newrelic_daemon_data:/tmp
+    profiles:
+      - production
+
+  # Web server
+  webserver:
+    image: nginx:alpine
+    container_name: jobs2_webserver
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - jobs2_network
+    depends_on:
+      - app
+
+  # Database
+  db:
+    image: mysql:8.0
+    container_name: jobs2_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-laravel}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_USER: ${DB_USERNAME:-laravel}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - jobs2_network
+
+  # Node service for frontend
+  node:
+    image: node:20-alpine
+    container_name: jobs2_node
+    volumes:
+      - ./:/var/www/html
+    working_dir: /var/www/html
+    command: sh -c "npm install && npm run dev"
+    networks:
+      - jobs2_network
+    profiles:
+      - dev
+
+networks:
+  jobs2_network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
+  newrelic_daemon_data:
+    driver: local 
