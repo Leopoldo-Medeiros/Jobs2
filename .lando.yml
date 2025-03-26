@@ -8,13 +8,13 @@ config:
 
 services:
   appserver:
-    type: php:8.3
+    type: php:8.2
     ssl: true
     cert: /Users/leopoldomedeiros/.lando/certs/appserver.jobs2.crt
     key: /Users/leopoldomedeiros/.lando/certs/appserver.jobs2.key
 
   node:
-    type: node:20
+    type: node:18
     ssl: false
     healthcheck: false
 
