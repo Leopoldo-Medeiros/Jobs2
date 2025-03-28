@@ -13,7 +13,7 @@ class Job extends Model
 
     protected $fillable = ['title', 'salary', 'about', 'employer_id'];
 
-    public function employer()
+    public function employer(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Employer::class); // Define the relationship with Employer
     }

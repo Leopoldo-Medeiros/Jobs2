@@ -9,8 +9,16 @@ use Illuminate\Support\Facades\Auth;
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <title>Home</title>
+    <script>
+        // Check for user's preference and set dark mode if needed
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
 </head>
-<body class="h-full">
+<body class="h-full font-body">
 <div class="min-h-full">
     <nav class="bg-gray-800">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -128,5 +136,6 @@ use Illuminate\Support\Facades\Auth;
         </div>
     </main>
 </div>
+
 </body>
 </html>
