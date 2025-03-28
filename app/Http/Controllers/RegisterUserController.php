@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class RegisterUserController extends Controller
 {
@@ -29,6 +30,9 @@ class RegisterUserController extends Controller
             'email' => $attributes['email'],
             'password' => Hash::make($attributes['password']),
         ]);
+
+        // Assign the default 'job_seeker' role to the newly registered user
+        $user->assignRole('job_seeker');
 
         Auth::login($user);
 
