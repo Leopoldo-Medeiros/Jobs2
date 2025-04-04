@@ -7,7 +7,9 @@ use App\Models\User;
 use App\Models\Employer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Auth\Authenticatable;
+use App\Mail\JobPosted;
 
 class JobController extends Controller
 {
@@ -42,47 +44,50 @@ class JobController extends Controller
 
     public function store(): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse
     {
-        $attributes = request()->validate([
+        request()->validate([
             'title' => ['required', 'min:3'],
-            'salary' => ['required'],
-            'about' => ['nullable']
+            'salary' => ['required']
         ]);
 
-        // Check if the authenticated user exists
+        // Get the authenticated user's employer
         $user = auth()->user();
-        if (!$user) {
-            return redirect('/jobs')->with('error', 'You need to be logged in to create jobs.');
-        }
-
-// Get the currently authenticated user model directly
-        $userModel = auth()->user();
-
-        // Get the employer associated with the user
-        $employer = $userModel->employer;
-
-        if (!$employer && $userModel->hasRole('admin')) {
+        $employer = $user->employer;
+        
+        // If user doesn't have an employer record yet, create one
+        if (!$employer && ($user->hasRole('admin') || $user->hasRole('employer'))) {
             $employer = Employer::create([
-                'user_id' => $userModel->id,
-                'name' => 'Admin Company'
+                'user_id' => $user->id,
+                'name' => $user->first_name . ' ' . $user->last_name . '\'s Company'
             ]);
         }
 
-        // If the employer is not found, return an error
         if (!$employer) {
-            return redirect('/jobs')->with('error', 'You need an employer account to create jobs. Please contact the administrator.');
+            abort(403, 'You need an employer profile to create jobs.');
         }
 
-        // Associate the job with the current user's employer
-        $attributes['employer_id'] = $employer->id;
+        $job = Job::create([
+            'title' => request('title'),
+            'salary' => request('salary'),
+            'employer_id' => $employer->id
+        ]);
 
-        // Create the job
-        Job::create($attributes);
+        // Only send mail if the mail class exists
+        if (class_exists(JobPosted::class)) {
+            try {
+                Mail::to($job->employer->user)->send(
+                    new JobPosted($job)
+                );
+            } catch (\Exception $e) {
+                // Log the error but don't fail the job creation
+                \Log::error('Failed to send job posting email: ' . $e->getMessage());
+                return redirect('/jobs')->with('success', 'Job posted successfully! (Email notification could not be sent due to rate limits)');
+            }
+        }
 
-        // Redirect to the jobs listing page
-        return redirect('/jobs')->with('success', 'Job created successfully!');
+        return redirect('/jobs')->with('success', 'Job posted successfully!');
     }
 
-    public function edit(Job $job): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
+        public function edit(Job $job): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
         // Admin can edit any job
         if (auth()->user()->hasRole('admin')) {
