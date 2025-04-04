@@ -21,10 +21,10 @@
             @endif
 
             @unless(count($jobs) == 0)
-                <div class="space-y-8">
+                <div>
                     @foreach($jobs as $job)
                         <a href="{{ url('/jobs/' . $job->id) }}"
-                           class="block px-4 py-6 border border-gray-200 rounded-lg hover:bg-gray-100 hover:border-blue-400">
+                           class="block px-4 py-6 border border-gray-200 rounded-lg hover:bg-gray-100 hover:border-blue-400 mb-4">
                             <div class="font-bold text-blue-500 text-xl">{{ $job->title }}<br></div>
 
                             <div>
@@ -34,7 +34,7 @@
                     @endforeach
                 </div>
 
-                <div>
+                <div class="mt-8">
                     {{ $jobs->links() }}
                 </div>
             @endunless
