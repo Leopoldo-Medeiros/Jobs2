@@ -4,6 +4,16 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Job;
 use App\Http\Controllers\JobController;
 use App\Mail\JobPosted;
+use App\Jobs\TranslateJob;
+
+Route::get('test', function () {
+
+    $job = Job::first();
+    
+     TranslateJob::dispatch($job);
+
+    return 'Done';
+});
 
 Route::get('/', function () {
     return view('home');
@@ -28,8 +38,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/jobs/{job}', [JobController::class, 'destroy']);
 });
 
-// This route must come after the more specific /jobs/create route
-Route::get('/jobs/{job}', [JobController::class, 'show']);
+// This route will only match numeric IDs, preventing 404s for non-numeric values like "test"
+Route::get('/jobs/{job}', [JobController::class, 'show'])->where('job', '[0-9]+');
 
 // Authentication Routes
 Route::get('/register', [App\Http\Controllers\RegisterUserController::class, 'create']);
