@@ -36,10 +36,14 @@ class JobController extends Controller
 
     public function show(Job $job): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
-        // Eager load the employer relationship and the employer's job count
-        $job->load(['employer', 'employer.jobs']);
-
-        return view('jobs.show', ['job' => $job]);
+        try {
+            // Eager load the employer relationship and the employer's job count
+            $job->load(['employer', 'employer.jobs']);
+            
+            return view('jobs.show', ['job' => $job]);
+        } catch (\Exception $e) {
+            abort(404, 'Job not found');
+        }
     }
 
     public function store(): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse
@@ -74,7 +78,7 @@ class JobController extends Controller
         // Only send mail if the mail class exists
         if (class_exists(JobPosted::class)) {
             try {
-                Mail::to($job->employer->user)->send(
+                Mail::to($job->employer->user)->queue(
                     new JobPosted($job)
                 );
             } catch (\Exception $e) {
