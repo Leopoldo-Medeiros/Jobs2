@@ -28,7 +28,7 @@
                             <div class="font-bold text-blue-500 text-xl">{{ $job->title }}<br></div>
 
                             <div>
-                                <b>Salary:</b> {{ $job->salary }} per year
+                                <b>Salary:</b> {{ $job->salary }}
                             </div>
                         </a>
                     @endforeach

@@ -69,10 +69,20 @@ class JobController extends Controller
             abort(403, 'You need an employer profile to create jobs.');
         }
 
+        // Format the salary
+        $salary = request('salary');
+        // Remove any non-numeric characters except decimal point
+        $salary = preg_replace('/[^0-9.]/', '', $salary);
+        // Format as currency
+        $salary = '$' . number_format((float)$salary, 0, '.', ',');
+
         $job = Job::create([
             'title' => request('title'),
-            'salary' => request('salary'),
-            'employer_id' => $employer->id
+            'salary' => $salary,
+            'employer_id' => $employer->id,
+            'is_remote' => request('is_remote', false),
+            'is_featured' => request('is_featured', false),
+            'employment_type' => request('employment_type', 'Full Time')
         ]);
 
         // Only send mail if the mail class exists
