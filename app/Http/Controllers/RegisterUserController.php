@@ -34,7 +34,9 @@ class RegisterUserController extends Controller
         // Assign the default 'job_seeker' role to the newly registered user
         $user->assignRole('job_seeker');
 
+        // Log in the user and regenerate the session
         Auth::login($user);
+        $request->session()->regenerate();
 
         return redirect('/')->with('success', 'Your account has been created!');
     }
